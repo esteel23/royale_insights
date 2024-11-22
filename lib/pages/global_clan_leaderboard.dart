@@ -1,6 +1,6 @@
 // global_clan_leaderboard.dart
 import 'package:flutter/material.dart';
-import 'clan_details_page.dart';
+import 'clan_details.dart';
 import '../services/api_service.dart';
 
 class GlobalClanLeaderboardPage extends StatefulWidget {
