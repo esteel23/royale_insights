@@ -1,24 +1,39 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class ApiService {
-  static const String _baseUrl = 'http://34.162.121.53:3000/api';
+const String _baseUrl = 'http://34.162.121.53:3000/api';
 
-  static Future<List<dynamic>> fetchLeaderboard() async {
-    final response = await http.get(Uri.parse('$_baseUrl/leaderboard'));
+/// Fetches data from the given SQL server endpoint and processes it into a list.
+///
+/// [queryParam] is the endpoint of the SQL server API that returns JSON data.
+///
+/// Returns a list of maps where each map represents a row in the SQL table.
+Future<List<Map<String, dynamic>>> fetchLeaderboard(String queryParam) async {
+  try {
+    // Make an HTTP GET request to the server
+    final response = await http.get(Uri.parse('$_baseUrl/$queryParam'));
 
+    // Check if the response status code is OK
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      // Parse the JSON response
+      final List<dynamic> jsonData = json.decode(response.body);
+
+      // Convert each row to a map (assuming each row is a JSON object)
+      return jsonData.map((row) => Map<String, dynamic>.from(row)).toList();
     } else {
-      throw Exception('Failed to load leaderboard');
+      // Handle server errors
+      throw Exception('Failed to fetch data: ${response.statusCode}');
     }
+  } catch (e) {
+    // Handle any errors during the HTTP request or JSON parsing
+    throw Exception('Error fetching JSON data: $e');
   }
 }
 
+
 Future<String> authenticatePlayer(String playerTag, String apiToken) async {
   try {
-    final response = await http.post(
-      Uri.parse('http://34.162.121.53:3000/api/authenticatePlayer'),
+    final response = await http.post(Uri.parse('$_baseUrl/authenticatePlayer'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'playerTag': playerTag,
@@ -40,20 +55,3 @@ Future<String> authenticatePlayer(String playerTag, String apiToken) async {
   }
 }
 
-Future<List<dynamic>> fetchClanLeaderboard() async {
-  final response = await http.get(Uri.parse('http://34.162.121.53:3000/api/clanLeaderboard'));
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Failed to load clan leaderboard');
-  }
-}
-
-Future<List<dynamic>> fetchClanMembers(String clanId) async {
-  final response = await http.get(Uri.parse('http://34.162.121.53:3000/api/clan/$clanId/players'));
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Failed to load clan members');
-  }
-}
