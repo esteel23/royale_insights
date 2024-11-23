@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> {
                 // Global Leaderboard
                 Expanded(
                   child: FutureBuilder<List<Map<String, dynamic>>>(
-                    future: fetchLeaderboard('leaderboard'), // Fetch leaderboard data
+                    future: fetchLeaderboard('playerleaderboard'), // Fetch leaderboard data
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -99,21 +99,21 @@ class _MainPageState extends State<MainPage> {
                           data: snapshot.data!, // Pass the fetched data
                           sqlCategories: const [
                             'rank',
-                            'id',
                             'display_name',
+                            'id',
                             'trophies',
+                            'exp',
                             'clan_name',
                             'clanid',
-                            'role'
                           ],
                           displayCategories: const [
                             'Rank',
-                            'Player Tag',
                             'Display Name',
+                            'Player Tag',
                             'Trophies',
+                            'Exp Level',
                             'Clan Name',
                             'Clan Tag',
-                            'Role'
                           ],
                           detailPageBuilder: (row) => Scaffold(
                             appBar: AppBar(

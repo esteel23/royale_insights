@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import 'api_service.dart';
 
 class AuthenticationDialog extends StatefulWidget {
   @override
