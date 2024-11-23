@@ -49,6 +49,11 @@ class _LeaderboardState extends State<Leaderboard> {
 
     // Default search category is the first SQL category
     _searchCategory = widget.sqlCategories.first;
+
+    // Initialize hover tracking for each row
+    for (var row in _filteredData) {
+      row['isHovered'] = false; // Add hover state to each row
+    }
   }
 
   // Sort the data by the default sort key
@@ -93,20 +98,6 @@ class _LeaderboardState extends State<Leaderboard> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Title
-        Container(
-          color: Colors.blueAccent,
-          padding: const EdgeInsets.all(16.0),
-          child: const Text(
-            'Leaderboard',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-
         // Search Bar
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -211,53 +202,52 @@ class _LeaderboardState extends State<Leaderboard> {
                   itemBuilder: (context, index) {
                     final row = _filteredData[index]; // Current row data
                     final backgroundColor =
-                        index.isEven ? Colors.white : Colors.grey[200];
+                        index.isEven ? Colors.white : Colors.grey[200]; // Default background
                     Color hoverColor = Colors.blue.withOpacity(0.1);
 
-                    return StatefulBuilder(
-                      builder: (context, setHoverState) {
-                        bool isHovered = false;
-
-                        return MouseRegion(
-                          onEnter: (_) {
-                            setHoverState(() => isHovered = true);
-                          },
-                          onExit: (_) {
-                            setHoverState(() => isHovered = false);
-                          },
-                          child: GestureDetector(
-                            onTap: () {
-                              if (widget.detailPageBuilder != null) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        widget.detailPageBuilder!(row),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Container(
-                              color: isHovered ? hoverColor : backgroundColor,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0, horizontal: 8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: widget.sqlCategories
-                                    .map((sqlCategory) => Expanded(
-                                          child: Text(
-                                            row[sqlCategory.toLowerCase()]
-                                                    ?.toString() ??
-                                                'N/A', // Handle null values
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ))
-                                    .toList(),
-                              ),
-                            ),
-                          ),
-                        );
+                    return MouseRegion(
+                      onEnter: (_) {
+                        setState(() {
+                          row['isHovered'] = true; // Set hover state
+                        });
                       },
+                      onExit: (_) {
+                        setState(() {
+                          row['isHovered'] = false; // Remove hover state
+                        });
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          if (widget.detailPageBuilder != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => widget.detailPageBuilder!(row),
+                              ),
+                            );
+                          }
+                        },
+                        child: Container(
+                          color: row['isHovered'] == true
+                              ? hoverColor
+                              : backgroundColor,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: widget.sqlCategories
+                                .map((sqlCategory) => Expanded(
+                                      child: Text(
+                                        row[sqlCategory.toLowerCase()]
+                                                ?.toString() ??
+                                            'N/A', // Handle null values
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -271,7 +261,8 @@ class _LeaderboardState extends State<Leaderboard> {
     return widget.sqlCategories.contains(_searchCategory) &&
         _filteredData.isNotEmpty &&
         int.tryParse(
-                _filteredData.first[_searchCategory.toLowerCase()]?.toString() ?? '') !=
+                _filteredData.first[_searchCategory.toLowerCase()]?.toString() ??
+                    '') !=
             null;
   }
 }
