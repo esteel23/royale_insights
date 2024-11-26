@@ -96,13 +96,17 @@ class _LeaderboardState extends State<Leaderboard> {
 
   @override
   Widget build(BuildContext context) {
-    // Use theme-based colors for compatibility with light and dark modes
-    final theme = Theme.of(context);
-    final textStyle = theme.textTheme.bodyText1!;
-    final headerTextStyle = theme.textTheme.headline6!;
-    final backgroundColor = theme.colorScheme.background;
-    final cardColor = theme.cardColor;
-    final hoverColor = theme.colorScheme.secondary.withOpacity(0.1);
+    // Determine the current theme mode
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    const Color darkModeBlack = Color.fromRGBO(20, 18, 24, 1);
+    const Color lighterDarkModeBlack = Color.fromRGBO(30, 27, 36, 1);
+
+    // Define colors based on the theme mode
+    final evenRowColor = isDarkMode ? darkModeBlack : Colors.white;
+    final oddRowColor = isDarkMode ? lighterDarkModeBlack : Colors.grey[200]!;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final headerBackgroundColor = isDarkMode ? Colors.grey[850]! : Colors.grey[300]!;
+    final hoverColor = isDarkMode ? Colors.grey[700]! : Colors.blue.withOpacity(0.1);
 
     return Column(
       children: [
@@ -122,7 +126,7 @@ class _LeaderboardState extends State<Leaderboard> {
                       child: Text(
                         widget.displayCategories[
                             widget.sqlCategories.indexOf(category)],
-                        style: textStyle,
+                        style: TextStyle(color: textColor),
                       ), // Match display name
                     );
                   }).toList(),
@@ -133,9 +137,10 @@ class _LeaderboardState extends State<Leaderboard> {
                       _filteredData = widget.data; // Reset filtered data
                     });
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Search by',
-                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: textColor),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ),
@@ -150,7 +155,7 @@ class _LeaderboardState extends State<Leaderboard> {
                     items: _numberFilterOptions.map((option) {
                       return DropdownMenuItem(
                         value: option,
-                        child: Text(option, style: textStyle),
+                        child: Text(option, style: TextStyle(color: textColor)),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -159,9 +164,10 @@ class _LeaderboardState extends State<Leaderboard> {
                         _updateSearchQuery(_searchQuery); // Update filter type
                       });
                     },
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Filter Type',
-                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(color: textColor),
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -171,10 +177,12 @@ class _LeaderboardState extends State<Leaderboard> {
               Expanded(
                 flex: 3,
                 child: TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Search',
-                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: textColor),
+                    border: const OutlineInputBorder(),
                   ),
+                  style: TextStyle(color: textColor),
                   onChanged: _updateSearchQuery,
                   keyboardType: _isNumericCategory()
                       ? TextInputType.number
@@ -187,7 +195,7 @@ class _LeaderboardState extends State<Leaderboard> {
 
         // Header Row
         Container(
-          color: cardColor,
+          color: isDarkMode ? lighterDarkModeBlack : headerBackgroundColor,
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -195,7 +203,10 @@ class _LeaderboardState extends State<Leaderboard> {
                 .map((displayName) => Expanded(
                       child: Text(
                         displayName,
-                        style: headerTextStyle,
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ))
                 .toList(),
@@ -211,7 +222,7 @@ class _LeaderboardState extends State<Leaderboard> {
                   itemBuilder: (context, index) {
                     final row = _filteredData[index]; // Current row data
                     final rowBackgroundColor =
-                        index.isEven ? backgroundColor : cardColor;
+                        index.isEven ? evenRowColor : oddRowColor;
 
                     return MouseRegion(
                       onEnter: (_) {
@@ -250,7 +261,7 @@ class _LeaderboardState extends State<Leaderboard> {
                                         row[sqlCategory.toLowerCase()]
                                                 ?.toString() ??
                                             'N/A', // Handle null values
-                                        style: textStyle,
+                                        style: TextStyle(color: textColor),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ))
