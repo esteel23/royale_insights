@@ -33,7 +33,7 @@ class _AuthenticationDialogState extends State<AuthenticationDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Authenticate Player'),
+      title: const Text('Clash Royale Login'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

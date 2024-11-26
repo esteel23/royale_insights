@@ -6,7 +6,7 @@ Leaderboard(
   data: <JSON File>,
   sqlCategories: <SQL Category Names Array>;
   displayCategories: <Category Names For User>;
-  detailPageBuilder: <Widget Builder For Detaials Page>;
+  detailPageBuilder: <Widget Builder For Details Page>;
 );
 */
 
@@ -96,6 +96,14 @@ class _LeaderboardState extends State<Leaderboard> {
 
   @override
   Widget build(BuildContext context) {
+    // Use theme-based colors for compatibility with light and dark modes
+    final theme = Theme.of(context);
+    final textStyle = theme.textTheme.bodyText1!;
+    final headerTextStyle = theme.textTheme.headline6!;
+    final backgroundColor = theme.colorScheme.background;
+    final cardColor = theme.cardColor;
+    final hoverColor = theme.colorScheme.secondary.withOpacity(0.1);
+
     return Column(
       children: [
         // Search Bar
@@ -114,6 +122,7 @@ class _LeaderboardState extends State<Leaderboard> {
                       child: Text(
                         widget.displayCategories[
                             widget.sqlCategories.indexOf(category)],
+                        style: textStyle,
                       ), // Match display name
                     );
                   }).toList(),
@@ -141,7 +150,7 @@ class _LeaderboardState extends State<Leaderboard> {
                     items: _numberFilterOptions.map((option) {
                       return DropdownMenuItem(
                         value: option,
-                        child: Text(option),
+                        child: Text(option, style: textStyle),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -178,7 +187,7 @@ class _LeaderboardState extends State<Leaderboard> {
 
         // Header Row
         Container(
-          color: Colors.grey[300],
+          color: cardColor,
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -186,7 +195,7 @@ class _LeaderboardState extends State<Leaderboard> {
                 .map((displayName) => Expanded(
                       child: Text(
                         displayName,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: headerTextStyle,
                       ),
                     ))
                 .toList(),
@@ -201,9 +210,8 @@ class _LeaderboardState extends State<Leaderboard> {
                   itemCount: _filteredData.length,
                   itemBuilder: (context, index) {
                     final row = _filteredData[index]; // Current row data
-                    final backgroundColor =
-                        index.isEven ? Colors.white : Colors.grey[200]; // Default background
-                    Color hoverColor = Colors.blue.withOpacity(0.1);
+                    final rowBackgroundColor =
+                        index.isEven ? backgroundColor : cardColor;
 
                     return MouseRegion(
                       onEnter: (_) {
@@ -222,7 +230,8 @@ class _LeaderboardState extends State<Leaderboard> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => widget.detailPageBuilder!(row),
+                                builder: (context) =>
+                                    widget.detailPageBuilder!(row),
                               ),
                             );
                           }
@@ -230,7 +239,7 @@ class _LeaderboardState extends State<Leaderboard> {
                         child: Container(
                           color: row['isHovered'] == true
                               ? hoverColor
-                              : backgroundColor,
+                              : rowBackgroundColor,
                           padding: const EdgeInsets.symmetric(
                               vertical: 4.0, horizontal: 8.0),
                           child: Row(
@@ -241,6 +250,7 @@ class _LeaderboardState extends State<Leaderboard> {
                                         row[sqlCategory.toLowerCase()]
                                                 ?.toString() ??
                                             'N/A', // Handle null values
+                                        style: textStyle,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ))

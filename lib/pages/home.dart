@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'card_statistics.dart';
-import 'global_leaderboard.dart'; 
+import 'global_leaderboard.dart';
 import '../services/authentication_dialogue.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final bool isDarkMode; 
+  final VoidCallback toggleTheme; 
+
+  const MainPage({
+    required this.isDarkMode,
+    required this.toggleTheme,
+    super.key,
+  });
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -33,7 +40,13 @@ class _MainPageState extends State<MainPage> {
         actions: [
           IconButton(
             onPressed: () => _showAuthenticationDialog(context),
-            icon: const Icon(Icons.login),
+            icon: const Icon(Icons.person),
+          ),
+          IconButton(
+            onPressed: widget.toggleTheme,
+            icon: Icon(
+              widget.isDarkMode ? Icons.dark_mode : Icons.dark_mode_outlined,
+            ),
           ),
         ],
       ),
