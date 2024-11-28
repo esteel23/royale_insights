@@ -30,6 +30,33 @@ Future<List<Map<String, dynamic>>> fetchLeaderboard(String queryParam) async {
   }
 }
 
+Future<List<Map<String, dynamic>>> fetchClanMembers(String clanTag) async {
+  try {
+    // Properly encode the clanTag to handle special characters like #
+    final encodedClanTag = Uri.encodeComponent(clanTag);
+
+    // Construct the API URL with the encoded clanTag
+    final uri = Uri.parse('$_baseUrl/clanmembers?clanTag=$encodedClanTag');
+
+    // Make an HTTP GET request to the server
+    final response = await http.get(uri);
+
+    // Check if the response status code is OK (200)
+    if (response.statusCode == 200) {
+      // Parse the JSON response
+      final List<dynamic> jsonData = json.decode(response.body);
+
+      // Convert each row to a Map<String, dynamic> and return the list
+      return jsonData.map((row) => Map<String, dynamic>.from(row)).toList();
+    } else {
+      // Throw an exception for server errors
+      throw Exception('Failed to fetch clan members: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Handle any errors during the HTTP request or JSON parsing
+    throw Exception('Error fetching clan members: $e');
+  }
+}
 
 Future<String> authenticatePlayer(String playerTag, String apiToken) async {
   try {

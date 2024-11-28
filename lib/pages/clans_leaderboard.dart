@@ -20,7 +20,7 @@ class ClansLeaderboardPage extends StatelessWidget {
             ),
           ),
         ),
-        Expanded( // Moved inside the children list of Column
+        Expanded(
           child: FutureBuilder<List<Map<String, dynamic>>>(
             future: fetchLeaderboard('clansleaderboard'),
             builder: (context, snapshot) {
@@ -51,10 +51,50 @@ class ClansLeaderboardPage extends StatelessWidget {
                   ],
                   detailPageBuilder: (row) => Scaffold(
                     appBar: AppBar(
-                      title: Text('${row['clan_name']} Details'),
+                      title: Text('${row['clan_name']} Members'),
                     ),
-                    body: const Center(
-                      child: Text('Test Value'),
+                    body: FutureBuilder<List<Map<String, dynamic>>>(
+                      future: fetchClanMembers(row['clanid']),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Center(child: Text('No members found.'));
+                        } else {
+                          return Leaderboard(
+                            data: snapshot.data!,
+                            sqlCategories: const [
+                              'clan_rank',
+                              'id',
+                              'display_name',
+                              'role',
+                              'trophies',
+                              'exp',
+                            ],
+                            displayCategories: const [
+                              'Clan Rank',
+                              'Player Tag',
+                              'Name',
+                              'Role',
+                              'Trophies',
+                              'Exp Level',
+                            ],
+                            detailPageBuilder: (memberRow) => Scaffold(
+                              appBar: AppBar(
+                                title:
+                                    Text('${memberRow['display_name']} Details'),
+                              ),
+                              body: Center(
+                                child: Text(
+                                    'Details for ${memberRow['display_name']}'),
+                              ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 );
