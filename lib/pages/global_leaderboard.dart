@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'player_details.dart'; // Import the PlayerDetailsPage class
 import '../src/leaderboard.dart';
 import '../services/api_service.dart';
 
@@ -52,19 +53,10 @@ class GlobalLeaderboardPage extends StatelessWidget {
                     'Clan Name',
                     'Clan Tag',
                   ],
-                  detailPageBuilder: (row) => Scaffold(
-                    appBar: AppBar(
-                      title: Text('${row['display_name']} Details'),
-                    ),
-                    body: Center(
-                      child: Text(
-                        row.entries
-                            .map((entry) =>
-                                '${entry.key}: ${entry.value ?? 'N/A'}')
-                            .join('\n'),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
+                  detailPageBuilder: (row) => PlayerDetailsPage(
+                    playerTag: row['id'],
+                    displayName: row['display_name'] ?? 'Unknown',
+                    row: row,
                   ),
                 );
               }
@@ -75,3 +67,4 @@ class GlobalLeaderboardPage extends StatelessWidget {
     );
   }
 }
+//const CLASH_ROYALE_API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImI4MTY5ZDJhLWYzNDctNGE0My1iYmVjLWEwZjA5ZmRlNDgwMSIsImlhdCI6MTczMDEzMjgyMSwic3ViIjoiZGV2ZWxvcGVyL2MwNDNlZjY2LTRjNWQtNTA0YS04NGUxLTY3ZWI1MjA1ODQyMSIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIzNC4xNjIuMTIxLjUzIl0sInR5cGUiOiJjbGllbnQifV19.4MEkTRPwv8pw7o_zzhR4wtJHIP5aUxEfJEdcdG8A96dM0srQGSHppRgjTQIwYkLOqEShvlQePyX4XheSg9ef3Q';

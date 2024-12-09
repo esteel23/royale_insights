@@ -68,31 +68,32 @@ class _LeaderboardState extends State<Leaderboard> {
   }
 
   // Update the search query and filter the leaderboard data
-  void _updateSearchQuery(String query) {
-    setState(() {
-      _searchQuery = query.toLowerCase(); // Case-insensitive search
-      _filteredData = widget.data.where((row) {
-        // Get the value for the current search category
-        final value = row[_searchCategory.toLowerCase()];
-        if (value == null) return false;
+void _updateSearchQuery(String query) {
+  setState(() {
+    _searchQuery = query.toLowerCase(); // Case-insensitive search
+    _filteredData = widget.data.where((row) {
+      // Get the value for the current search category
+      final value = row[_searchCategory.toLowerCase()];
+      if (value == null) return false;
 
-        // Handle numeric searches
-        if (value is int || int.tryParse(value.toString()) != null) {
-          final intValue = value is int ? value : int.parse(value.toString());
-          if (_numberFilterType == 'Greater than') {
-            return intValue > (int.tryParse(query) ?? 0);
-          } else if (_numberFilterType == 'Less than') {
-            return intValue < (int.tryParse(query) ?? 0);
-          } else {
-            return intValue == (int.tryParse(query) ?? 0);
-          }
+      // Handle numeric searches
+      if (value is int || int.tryParse(value.toString()) != null) {
+        final intValue = value is int ? value : int.parse(value.toString());
+        if (_numberFilterType == 'Greater than') {
+          return intValue > (int.tryParse(query) ?? 0);
+        } else if (_numberFilterType == 'Less than') {
+          return intValue < (int.tryParse(query) ?? 0);
+        } else {
+          return intValue == (int.tryParse(query) ?? 0);
         }
+      }
 
-        // Handle string searches (exact match)
-        return value.toString().toLowerCase() == query;
-      }).toList();
-    });
-  }
+      // Handle string searches (allow partial matches)
+      return value.toString().toLowerCase().contains(_searchQuery);
+    }).toList();
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {

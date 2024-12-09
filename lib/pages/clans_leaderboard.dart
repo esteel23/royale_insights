@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../src/leaderboard.dart';
 import '../services/api_service.dart';
+import '../pages/player_details.dart';
 
 class ClansLeaderboardPage extends StatelessWidget {
   const ClansLeaderboardPage({super.key});
@@ -82,15 +83,10 @@ class ClansLeaderboardPage extends StatelessWidget {
                               'Trophies',
                               'Exp Level',
                             ],
-                            detailPageBuilder: (memberRow) => Scaffold(
-                              appBar: AppBar(
-                                title:
-                                    Text('${memberRow['display_name']} Details'),
-                              ),
-                              body: Center(
-                                child: Text(
-                                    'Details for ${memberRow['display_name']}'),
-                              ),
+                            detailPageBuilder: (memberRow) => PlayerDetailsPage(
+                              playerTag: memberRow['id'],
+                              displayName: memberRow['display_name'] ?? 'Unknown',
+                              row: memberRow,
                             ),
                           );
                         }

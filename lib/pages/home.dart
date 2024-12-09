@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:leaderboard/pages/clans_leaderboard.dart';
-import 'card_statistics.dart';
+import 'matchmaking.dart';
 import 'global_leaderboard.dart';
 import '../services/authentication_dialogue.dart';
 
@@ -24,6 +24,7 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = [
     const GlobalLeaderboardPage(),
     const ClansLeaderboardPage(),
+    const MatchmakingPage(),
   ];
 
   void _selectPage(int index) {
@@ -74,6 +75,10 @@ class _MainPageState extends State<MainPage> {
             ListTile(
               title: const Text('Clans Leaderboard'),
               onTap: () => _selectPage(1),
+            ),
+            ListTile(
+              title: const Text('Matchmaking'),
+              onTap: () => _selectPage(2),
             ),
           ],
         ),
